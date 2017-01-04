@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Formulaire test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<form action="/login" method="post">
+    Bonjour <span th:if="${login}" th:text="${login}"></span>
+    <label>
+        Login:
+        <input name="name" type="text"/>
+    </label>
+    <input type="submit" value="OK"/>
+</form>
+
+</body>
+</html>
+
