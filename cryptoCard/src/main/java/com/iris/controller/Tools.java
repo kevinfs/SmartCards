@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 public class Tools {
 
 	@SuppressWarnings("unused")
-	private String md5(String password) {
+	public String md5(String password) {
 		byte[] uniqueKey = password.getBytes();
 		byte[] hash = null;
 
@@ -28,8 +28,7 @@ public class Tools {
 		return hashString.toString();
 	}
 
-	public static int alea(int n) {
+	public int alea(int n) {
 		return (int) (Math.random() * n);
 	}
-
 }
