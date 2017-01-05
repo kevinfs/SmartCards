@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class SubscriptionController {
@@ -26,15 +27,15 @@ public class SubscriptionController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/subscribe")
-    public String subscribe(@RequestParam(value = "login") String login,
-                            @RequestParam(value = "password") String password,
-                            @RequestParam(value = "sel") String sel) {
+    public @ResponseBody String subscribe(@RequestParam(value = "login") String login,
+                     @RequestParam(value = "password") String password,
+                     @RequestParam(value = "sel") String sel) {
 
         User user = new User();
         user.setLogin(login);
         user.setSel(sel);
-        user.setPassword(tools.md5(password + sel));
+        user.setPassword(password);
         userRepository.save(user);
-        return "login";
+        return "OK";
     }
 }
