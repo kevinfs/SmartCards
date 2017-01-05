@@ -1,7 +1,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
-#include <cv.h>
+// #include <cv.h>
+#include <opencv2/opencv.hpp>
 
 using namespace cv;
 using namespace std;
@@ -103,6 +104,7 @@ void barycentre(Mat grad, int *x, int *y) {
 
     *x = barX / sumX;
     *y = barY / sumY;
+
 }
 
 void threshold(Mat frame) {
