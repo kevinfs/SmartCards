@@ -36,8 +36,19 @@ int main() {
 	if (strcmp(extension, "ppm") == 0) { // condition sur le type de fichier ppm ou pgm
 		
 		ImagePPM img;     // déclaration de l'image
+		ImagePGM img2;
 		img.loadImage(name.c_str()); // chargement de l'image
 		myfile.open ("histoGrammeRGB.txt");
+		img2 = img.grayscale();
+		img2 = img2.sobel(180);
+		strcat(image, "_sobel.pgm");// Nouveau nom du fichier
+        img2.saveImage(image);// Enregistrement de l'image
+
+
+
+
+
+
 
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         
