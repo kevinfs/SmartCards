@@ -1,4 +1,4 @@
-all :  histogram main
+all :  histogram 
 
 libraries: libhistogram.a libhistogram.so 
 
@@ -20,16 +20,10 @@ libhistogram.a : Image.o ImagePGM.o ImagePPM.o
 histogram.o :   histogram.C ImagePPM.h
 	c++ -c histogram.C 
 
-main.o :   main.C ImagePPM.h ImagePGM.h
-	c++ -c main.C 
-
 histogram : histogram.o libhistogram.so
 	 c++ -fPIC histogram.o -L. -lhistogram -o histogram 
 
-main : main.o libhistogram.so
-	 c++ -fPIC main.o -L. -lhistogram -o histogram 
-
 clean :
-	rm -f *.o  histogram  main *~
+	rm -f *.o  histogram  *~
 	rm -f *.so  histogram *~
 	rm -f *.a  histogram *~
