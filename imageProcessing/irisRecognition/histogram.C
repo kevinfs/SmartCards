@@ -46,10 +46,6 @@ int main() {
 
 
 
-
-
-
-
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         
         for (int i = 0; i < 256; ++i) {
