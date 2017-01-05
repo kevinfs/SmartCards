@@ -1,23 +1,24 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Login</title>
+    <title>Subscribe</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-<form action="/login" method="post">
-    <div th:if="${message}">
-        <span th:text="${message}"></span>
-    </div>
+<form action="/subscribe" method="post">
     <div>
-        Graine <span th:text="${graine}"></span>
+        Sel <span th:text="${sel}"></span>
     </div>
 
     <label>
         Login:
         <input name="login" type="text"/>
-        <input name="graine" type="hidden" th:value="${graine}"/>
     </label>
+    <label>
+        Password:
+        <input name="password" type="password"/>
+    </label>
+    <input name="sel" type="hidden" th:value="${sel}"/>
     <input type="submit" value="OK"/>
 </form>
 

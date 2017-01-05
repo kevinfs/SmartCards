@@ -1,12 +1,20 @@
 package com.iris.model;
 
-public class Histo {
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String login;
-    private String mdp;
+    private String password;
     private String sel;
-    private String histo;
 
     public Long getId() {
         return id;
@@ -24,12 +32,12 @@ public class Histo {
         this.login = login;
     }
 
-    public String getMdp() {
-        return mdp;
+    public String getPassword() {
+        return password;
     }
 
-    public void setMdp(String mdp) {
-        this.mdp = mdp;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getSel() {
@@ -39,12 +47,5 @@ public class Histo {
     public void setSel(String sel) {
         this.sel = sel;
     }
-
-    public String getHisto() {
-        return histo;
-    }
-
-    public void setHisto(String histo) {
-        this.histo = histo;
-    }
 }
+
