@@ -1,1 +1,0 @@
-# Iris recognition section of this project

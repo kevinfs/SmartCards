@@ -1,31 +1,29 @@
+all :  histogram
 
+libraries: libhistogram.a libhistogram.so 
 
+Image.o : Image.h Image.C
+	c++ -c Image.C -fPIC
 
+ImagePGM.o : ImagePGM.h ImagePGM.C
+	c++ -c ImagePGM.C -fPIC
 
-EXE_SUFFIX=
+ImagePPM.o : ImagePPM.h ImagePPM.C
+	c++ -c ImagePPM.C -fPIC
 
-ARCHS=   
-CFLAGS+= $(ARCHS)
-CFLAGS += -mmacosx-version-min=10.6
-CFLAGS_MONGOOSE=  -I./mongoose -pthread -g 
-LIBS+=	 $(ARCHS)
+libhistogram.so :  Image.o ImagePGM.o ImagePPM.o
+	c++ -shared -o libhistogram.so  Image.o ImagePGM.o ImagePPM.o
 
+libhistogram.a : Image.o ImagePGM.o ImagePPM.o
+	ar cr libhistogram.a Image.o ImagePGM.o ImagePPM.o
 
+histogram.o :   histogram.C ImagePPM.h
+	c++ -c histogram.C 
 
+histogram : histogram.o libhistogram.so
+	 c++ -fPIC histogram.o -L. -lhistogram -o histogram 
 
-CFLAGS += $(INCLUDES) -O -Wall -std=gnu99
-
-
-all: main
-
-main: main.o main.o 
-	$(CC) $(CFLAGS) -o main$(EXE_SUFFIX) main.o  $(LIBS) -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_videoio -lopencv_imgcodecs
-
-
-.c.o:
-	$(CC) $(CFLAGS) -c $*.c -o $*.o -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_videoio -lopencv_imgcodecs
-
-
-clean:
-	rm -f $(OBJ) main main.exe *.o *.a
-
+clean :
+	rm -f *.o  histogram *~
+	rm -f *.so  histogram *~
+	rm -f *.a  histogram *~
