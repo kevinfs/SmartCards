@@ -1,4 +1,4 @@
-package com.iris.smartcard;
+package com.client.smartcard;
 
 import javax.smartcardio.CardChannel;
 
