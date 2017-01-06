@@ -1,12 +1,8 @@
 package com.client.controller;
 
 import com.iris.service.Tools;
-import org.springframework.http.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +19,8 @@ public class HttpRequestBuilderTest {
         final String password = "caca";
 
 //        initialisation
-        HttpRequestBuilder http = new HttpRequestBuilder();
+        String baseURL = "https://localhost:8088";
+        HttpRequestBuilder http = new HttpRequestBuilder(baseURL);
 
 //        récupération graine
         url = "https://localhost:8088/graine";

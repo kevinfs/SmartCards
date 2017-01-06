@@ -23,8 +23,10 @@ public class HttpRequestBuilder {
     RestTemplate restTemplate;
     HttpHeaders headers;
     public static final String KEYSTORE_PATH = "cryptoCard/src/main/resources/keystore.jks";
+    String baseURL;
 
-    HttpRequestBuilder() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    public HttpRequestBuilder(String baseURL) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+        this.baseURL = baseURL;
         init();
     }
 
@@ -67,11 +69,11 @@ public class HttpRequestBuilder {
     }
 
     public String get(String url) {
-        return restTemplate.exchange(url, HttpMethod.GET, null, String.class).getBody();
+        return restTemplate.exchange(baseURL + url, HttpMethod.GET, null, String.class).getBody();
     }
 
     public String post(String url, MultiValueMap<String, String> map) {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(url, request, String.class).getBody();
+        return restTemplate.postForEntity(baseURL + url, request, String.class).getBody();
     }
 }
