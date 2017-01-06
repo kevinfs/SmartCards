@@ -16,11 +16,11 @@ int main() {
     char* image; 
     ofstream myfile;
 
-    cout << "Color histogram C++ program" <<endl;
+    // cout << "Color histogram C++ program" <<endl;
 
-    cout << "Entrer le nom de votre fichier image : ";
-    cin >> inputImage;
-
+    // cout << "Entrer le nom de votre fichier image : ";
+    // cin >> inputImage;
+    inputImage = "img/ellipse1.ppm"
     image = inputImage ;
    
 	char* charPointer, *extension;
@@ -43,11 +43,11 @@ int main() {
 		img.loadImage(name.c_str()); // chargement de l'image
 		myfile.open ("histo/histoGrammeRGB.txt");
 		img2 = img.grayscale();
-		// generateRtable(&img2);
+		generateRtable(&img2);
 
-		// strcat(image, "_sobel.pgm");// Nouveau nom du fichier
-  //       img2.saveImage(image);// Enregistrement de l'image
-		generalizedHoughTransform();
+		strcat(image, "_sobel.pgm");// Nouveau nom du fichier
+        img2.saveImage(image);// Enregistrement de l'image
+
 
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         

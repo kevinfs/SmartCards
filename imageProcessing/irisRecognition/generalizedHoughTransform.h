@@ -10,4 +10,12 @@
 
 using namespace std;
 
+
+struct RBeta {
+	double r;
+  	double beta;
+} ;
+
+
 void generateRtable(ImagePGM *img);
+void generalizedHoughTransform();
