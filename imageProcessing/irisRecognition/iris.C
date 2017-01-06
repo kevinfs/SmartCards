@@ -4,15 +4,18 @@
 #include <string.h>
 #include <fstream>
 
-#include "ImagePPM.h"
+#include "generalizedHoughTransform.h"
+
+// tuto suivi pr hought transform generalized : http://fourier.eng.hmc.edu/e161/lectures/hough/node6.html
 
 using namespace std;
-
+// voir std::map pour hashmap et std::vector pr arraylist
+// diviser le main
 int main() {
-
 	char inputImage[50];  // récupération du nom de l'image saisi par l'utilisateur
     char* image; 
     ofstream myfile;
+
     cout << "Color histogram C++ program" <<endl;
 
     cout << "Entrer le nom de votre fichier image : ";
@@ -38,19 +41,19 @@ int main() {
 		ImagePPM img;     // déclaration de l'image
 		ImagePGM img2;
 		img.loadImage(name.c_str()); // chargement de l'image
-		myfile.open ("histoGrammeRGB.txt");
+		myfile.open ("histo/histoGrammeRGB.txt");
 		img2 = img.grayscale();
-		img2 = img2.sobel(180);
+		generateRtable(&img2);
+
 		strcat(image, "_sobel.pgm");// Nouveau nom du fichier
         img2.saveImage(image);// Enregistrement de l'image
-
 
 
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         
         for (int i = 0; i < 256; ++i) {
             
-            printf("pour la couleur :%d le rouge: %d le vert: %d le bleu :%d \n", i, pInt[i].red, pInt[i].green, pInt[i].blue );
+            // printf("pour la couleur :%d le rouge: %d le vert: %d le bleu :%d \n", i, pInt[i].red, pInt[i].green, pInt[i].blue );
         	
         	myfile << pInt[i].red
         		   << " "

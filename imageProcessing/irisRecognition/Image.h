@@ -44,6 +44,9 @@ public:
 	virtual int findPixel(int x, int y)=0;
 
 	
+	int getSize();
+	int get_width();
+	int get_height();
 
 };
 

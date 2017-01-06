@@ -1,5 +1,8 @@
 #include "Image.h"
 
+#include<cmath>
+#include<math.h>
+
 using namespace std;
 
 class ImagePGM: public Image {
@@ -26,10 +29,12 @@ public:
    /**********************************************************************/
     int arraySize();
 
+    void barycentre( int *x, int *y);
+
     /**********************************************************************/
    /*********** Méthode de sobel avec le seuil en paramètre  *************/
   /**********************************************************************/
-	ImagePGM sobel(int sobelLevel);
+	ImagePGM sobel(int sobelLevel, double ** gDirection);
 
   /*******************************************************************/
  /************************Histogramme de l'image ********************/

@@ -114,6 +114,17 @@ int Image::loadImage(string filename) {
 	return 0;
 }
 
+int Image::getSize(){
+	return _size;
+}
+
+int Image::get_width(){
+	return _width;
+}
+int Image::get_height(){
+	return _height;
+}
+
   /*********************************************************************************************************/
  /****** Implémentation de la méthode stockage de l'image dans un tableau à une seule dimension ***********/
 /*********************************************************************************************************/

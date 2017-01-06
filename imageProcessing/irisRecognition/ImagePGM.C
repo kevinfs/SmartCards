@@ -1,6 +1,5 @@
 #include"ImagePGM.h"
 #include<string>
-#include<cmath>
 
 using namespace std;
 
@@ -34,7 +33,30 @@ int ImagePGM::arraySize() {
  /*********************** Implémentation du filtre de Sobel ***************************************/
 /*************************************************************************************************/
 
-ImagePGM ImagePGM::sobel(int sobelLevel) {
+
+void ImagePGM::barycentre( int *x, int *y) {
+    int sumX = 0, sumY = 0;
+    int barX = 0, barY = 0;	
+
+    for (int i = 1; i <= _width - 1; i++) {
+		for (int j = 1; j <= _height - 1; j++) {
+            if (_array[findPixel(i, j )] == 255) {
+                barX += i;
+                barY += j;
+
+                sumX++;
+                sumY++;
+            }
+        }
+    }
+
+    *x = barX / sumX;
+    *y = barY / sumY;
+    // _array[findPixel(*x, *y )] =0;//this line print the barycentre in the picture
+
+}
+
+ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
     
     
     /************************************************************************/
@@ -72,17 +94,24 @@ ImagePGM ImagePGM::sobel(int sobelLevel) {
 					+ sobely[2][0] * _array[findPixel(i - 1, j + 1)]
 					+ sobely[2][2] * _array[findPixel(i + 1, j + 1)]);
             
-            // calcul de la valeur du gradiant
+            // calcul de la valeur du gradiant : norme 
             g = sqrt(gradiantX * gradiantX + gradiantY * gradiantY);
+            // direction du gradient
     
     /************************************************************************/
    /********** Comparaison des valeurs des pixel avec le seuil *************/
   /************************************************************************/
             
-            if (g > sobelLevel) {
+            if (g > sobelLevel) {// CONTOURS
             	tmp = 255; // On detecte les contours en attribuant une couleur blanche
+
+            	gDirection[i][j] = atan((double)gradiantY/(double)gradiantX)*180/M_PI; //conversion radian to degree
+            // printf("%d\n", *gDirection );
+
             } else {
             	tmp = 0; // si pas de contour on met la couleur à noir
+            	gDirection[i][j] = 0.0;
+
             }
            
         
@@ -90,6 +119,7 @@ ImagePGM ImagePGM::sobel(int sobelLevel) {
             sobelArray[findPixel(i, j)] = tmp;
         }
 	}
+	// retourner sobelArray, gradiantX, gradiantY  !!!!
 	ImagePGM img(_width, _height, sobelArray);
 	return img;
 }
