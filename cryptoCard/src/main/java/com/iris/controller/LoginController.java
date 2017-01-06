@@ -26,6 +26,12 @@ public class LoginController {
         return "login";
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/graine")
+    @ResponseBody
+    public String graine() {
+        return String.valueOf(tools.alea(1000));
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     public String step2(@RequestParam(value = "login") String login, @RequestParam(value = "graine") String graine, Model model) {
 
