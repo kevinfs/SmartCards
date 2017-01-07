@@ -16,55 +16,55 @@ int main() {
     char* image; 
     ofstream myfile;
 
-    cout << "Color histogram C++ program" <<endl;
+    // cout << "Color histogram C++ program" <<endl;
 
-    cout << "Entrer le nom de votre fichier image : ";
-    cin >> inputImage;
+    // cout << "Entrer le nom de votre fichier image : ";
+ //    cin >> inputImage;
 
-    image = inputImage ;
+ //    image = inputImage ;
    
-	char* charPointer, *extension;
-    string name(image);
+	// char* charPointer, *extension;
+ //    string name(image);
 
-	// séparation de l'extension du nom de l'image en se basant sur le delimiteur "."
-	charPointer = strtok(image, ".");
+	// // séparation de l'extension du nom de l'image en se basant sur le delimiteur "."
+	// charPointer = strtok(image, ".");
 	
-	while (charPointer) {
-		extension = charPointer; // récupération de l'extension
-		charPointer = strtok(NULL, "."); 
-	} 
-	  /********************************************************************************/
-	 /********************************* Image PPM ************************************/
-	/********************************************************************************/
-	if (strcmp(extension, "ppm") == 0) { // condition sur le type de fichier ppm ou pgm
+	// while (charPointer) {
+	// 	extension = charPointer; // récupération de l'extension
+	// 	charPointer = strtok(NULL, "."); 
+	// } 
+	//   /********************************************************************************/
+	//  /********************************* Image PPM ************************************/
+	// /********************************************************************************/
+	// if (strcmp(extension, "ppm") == 0) { // condition sur le type de fichier ppm ou pgm
 		
-		ImagePPM img;     // déclaration de l'image
-		ImagePGM img2;
-		img.loadImage(name.c_str()); // chargement de l'image
-		myfile.open ("histo/histoGrammeRGB.txt");
-		img2 = img.grayscale();
+		// ImagePPM img;     // déclaration de l'image
+		// ImagePGM img2;
+		// img.loadImage(name.c_str()); // chargement de l'image
+		// myfile.open ("histo/histoGrammeRGB.txt");
+		// img2 = img.grayscale();
 		// generateRtable(&img2);
 
 		// strcat(image, "_sobel.pgm");// Nouveau nom du fichier
   //       img2.saveImage(image);// Enregistrement de l'image
 		generalizedHoughTransform();
 
-		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
+		// ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         
-        for (int i = 0; i < 256; ++i) {
+  //       for (int i = 0; i < 256; ++i) {
             
-            // printf("pour la couleur :%d le rouge: %d le vert: %d le bleu :%d \n", i, pInt[i].red, pInt[i].green, pInt[i].blue );
+  //           // printf("pour la couleur :%d le rouge: %d le vert: %d le bleu :%d \n", i, pInt[i].red, pInt[i].green, pInt[i].blue );
         	
-        	myfile << pInt[i].red
-        		   << " "
-        		   << pInt[i].green
-        		   << " "
-        		   << pInt[i].blue
-        		   << "\n";
-        }
+  //       	myfile << pInt[i].red
+  //       		   << " "
+  //       		   << pInt[i].green
+  //       		   << " "
+  //       		   << pInt[i].blue
+  //       		   << "\n";
+  //       }
 		
-		myfile.close();			
-	}
+		// myfile.close();			
+	// }
 	
 				
 return 0;

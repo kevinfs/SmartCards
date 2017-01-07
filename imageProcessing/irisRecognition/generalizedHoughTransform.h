@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
-
+#include <map>
+#include <vector>
 #include "ImagePPM.h"
 
 // tuto suivi pr hought transform generalized : http://fourier.eng.hmc.edu/e161/lectures/hough/node6.html
@@ -17,5 +18,5 @@ struct RBeta {
 } ;
 
 
-void generateRtable(ImagePGM *img);
+std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img);
 void generalizedHoughTransform();

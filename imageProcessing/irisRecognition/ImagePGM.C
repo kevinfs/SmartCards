@@ -56,6 +56,12 @@ void ImagePGM::barycentre( int *x, int *y) {
 
 }
 
+void ImagePGM::modifyImg( int x, int y, int color) {
+  
+    _array[findPixel(x, y )] = color;//this line print  in the picture
+
+}
+
 ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
     
     
@@ -74,8 +80,8 @@ ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
     byte sobelArray[_size];
 	byte tmp;
 	// On commence l'analyse de l'image à partir du pixel(1,1) 
-	for (int i = 1; i <= _width - 2; i++) {
-		for (int j = 1; j <= _height - 2; j++) {
+	for (int i = 1; i <= _width - 1; i++) {
+		for (int j = 1; j <= _height - 1; j++) {
 			// On mutliplie colonne par ligne et en evitant les points qui sont à zero pour
 			// Ne pas surcharger le code
 			gradiantX = (sobelx[0][0] * _array[findPixel(i - 1, j - 1)]
