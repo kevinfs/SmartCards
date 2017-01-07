@@ -2,8 +2,8 @@ package com.iris.service;
 
 import org.springframework.stereotype.Service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.math.BigInteger;
+import java.security.*;
 
 @Service
 public class Tools {
@@ -33,5 +33,45 @@ public class Tools {
 
 	public int alea(int n) {
 		return (int) (Math.random() * n);
+	}
+
+	public String ECDSA(String s) throws Exception{
+		/*
+		 * Generate an ECDSA signature
+		 */
+
+		/*
+		 * Generate a key pair
+		 */
+
+		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+
+		keyGen.initialize(256, random);
+
+		KeyPair pair = keyGen.generateKeyPair();
+		PrivateKey priv = pair.getPrivate();
+		PublicKey pub = pair.getPublic();
+
+		/*
+		 * Create a Signature object and initialize it with the private key
+		 */
+
+		Signature dsa = Signature.getInstance("SHA256withECDSA");
+
+		dsa.initSign(priv);
+
+		byte[] strByte = s.getBytes("UTF-8");
+		dsa.update(strByte);
+
+		/*
+		 * Now that all the data to be signed has been read in, generate a
+		 * signature for it
+		 */
+
+		byte[] realSig = dsa.sign();
+		String signature =  new BigInteger(1, realSig).toString(16);
+		return signature;
+
 	}
 }
