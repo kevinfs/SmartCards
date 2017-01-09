@@ -35,7 +35,7 @@ public class Tools {
 		return (int) (Math.random() * n);
 	}
 
-	public String ECDSA(String s) throws Exception{
+	public String ECDSA(String s) throws Exception {
 		/*
 		 * Generate an ECDSA signature
 		 */
@@ -70,8 +70,17 @@ public class Tools {
 		 */
 
 		byte[] realSig = dsa.sign();
-		String signature =  new BigInteger(1, realSig).toString(16);
+		String signature = new BigInteger(1, realSig).toString(16);
 		return signature;
 
+	}
+
+	public boolean verifECDSA(byte[] baText, PublicKey pk, byte[] baSignature) throws GeneralSecurityException {
+		Signature signature;
+		signature = Signature.getInstance("SHA1withECDSA", "SunEC");
+		signature.initVerify(pk);
+		signature.update(baText);
+		boolean result = signature.verify(baSignature);
+		return result;
 	}
 }
