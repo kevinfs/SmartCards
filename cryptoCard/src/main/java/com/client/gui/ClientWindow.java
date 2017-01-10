@@ -103,8 +103,12 @@ public class ClientWindow {
         gbc_btnNewButton.gridx = 0;
         gbc_btnNewButton.gridy = 0;
         panel_2.add(btnNewButton, gbc_btnNewButton);
-
+        
         btnNewButton.addActionListener(e -> {
+        	if (loginField.getText().isEmpty()){
+        		lblLogin.setText("Login incorrect !");
+        	}
+        	else{
             url = "/login";
             requestData = new LinkedMultiValueMap<>();
             requestData.add("login", loginField.getText());
@@ -115,7 +119,7 @@ public class ClientWindow {
             PasswordWindow window = new PasswordWindow(loginField.getText(), graine, sel);
             frame.setVisible(false);
             window.frame.setVisible(true);
-
+        	}
         });
     }
 }
