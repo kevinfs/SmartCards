@@ -103,6 +103,11 @@ public class PasswordWindow {
         GridLayout gbl_panel_2 = new GridLayout(2, 5);
         panel_2.setLayout(gbl_panel_2);
 
+
+
+        JLabel status = new JLabel();
+        panel_1.add(status);
+
         int[] solutionArray = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         shuffleArray(solutionArray);
 
@@ -141,6 +146,7 @@ public class PasswordWindow {
             requestData.add("graine", graine);
 
             String response = http.post(url, requestData);
+            status.setText(response);
             System.out.println("response = " + response);
         });
     }
