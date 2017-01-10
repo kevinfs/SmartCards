@@ -43,7 +43,7 @@ public class PasswordWindow {
         EventQueue.invokeLater(() -> {
             try {
                 PasswordWindow window = new PasswordWindow("login", "graine42", "sel42");
-
+                window.frame.setTitle("SmartCards");
                 window.frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -71,12 +71,12 @@ public class PasswordWindow {
      */
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 500, 400);
+        frame.setBounds(200, 200, 950, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         JPanel panel = new JPanel();
-        panel.setBounds(100, 50, 800, 800);
+        panel.setBounds(80, 50, 800, 800);
         frame.getContentPane().add(panel);
 
         JSplitPane splitPane = new JSplitPane();
@@ -88,14 +88,14 @@ public class PasswordWindow {
 
         JPanel panel_3 = new JPanel();
         panel_1.add(panel_3);
-        panel_3.setLayout(new GridLayout(0, 1, 0, 0));
+        panel_3.setLayout(new GridLayout(1, 1, 0, 0));
 
-        JLabel lblPassword = new JLabel("Password");
+        JLabel lblPassword = new JLabel("Password ");
         panel_3.add(lblPassword);
 
-        passwordField = new JTextField();
+        passwordField = new JPasswordField();
         panel_3.add(passwordField);
-        passwordField.setColumns(5);
+        passwordField.setColumns(10);
         passwordField.setEnabled(false);
 
         JPanel panel_2 = new JPanel();
@@ -123,7 +123,7 @@ public class PasswordWindow {
         );
         panel_2.add(clearButton);
 
-        JButton send = new JButton("=> Send");
+        JButton send = new JButton("Send");
         GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
         gbc_btnNewButton.anchor = GridBagConstraints.SOUTHEAST;
         gbc_btnNewButton.gridx = 0;
