@@ -7,17 +7,25 @@ import org.springframework.util.MultiValueMap;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PasswordWindow {
 
     private static HttpRequestBuilder http;
     public JFrame frame;
-    private JTextField loginField;
     private JTextField passwordField;
     Tools tools = new Tools();
 
     String url;
+    String login;
     String graine;
+    String sel;
     MultiValueMap<String, String> requestData;
 
     /**
@@ -32,27 +40,30 @@ public class PasswordWindow {
             e.printStackTrace();
         }
 
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    PasswordWindow window = new PasswordWindow();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                PasswordWindow window = new PasswordWindow("login", "graine42", "sel42");
+
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
-    /**
-     * Create the application.
-     */
-    public PasswordWindow() {
-        initialize();
-//        url = "/graine";
-//        graine = http.get(url);
-//        System.out.println("graine = " + graine);
+    public PasswordWindow(String login, String graine, String sel) {
+        String baseURL = "https://localhost:8088";
 
+        try {
+            http = new HttpRequestBuilder(baseURL);
+        } catch (CertificateException | KeyManagementException | IOException | NoSuchAlgorithmException | KeyStoreException e) {
+            e.printStackTrace();
+        }
+
+        initialize();
+        this.login = login;
+        this.graine = graine;
+        this.sel = sel;
     }
 
     /**
@@ -89,33 +100,61 @@ public class PasswordWindow {
 
         JPanel panel_2 = new JPanel();
         splitPane.setRightComponent(panel_2);
-        GridLayout gbl_panel_2 = new GridLayout(2,5);
+        GridLayout gbl_panel_2 = new GridLayout(2, 5);
         panel_2.setLayout(gbl_panel_2);
 
-        for (int i = 0; i < 10; i++) {
-            JButton btnNewButton = new JButton(String.valueOf(i));
-            btnNewButton.setPreferredSize(new Dimension(2,0));
-            panel_2.add(btnNewButton);
+        int[] solutionArray = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        shuffleArray(solutionArray);
 
+        for (int i = 0; i < 10; i++) {
+            JButton btnNewButton = new JButton(String.valueOf(solutionArray[i]));
+            btnNewButton.setPreferredSize(new Dimension(2, 0));
+            panel_2.add(btnNewButton);
+            btnNewButton.addActionListener(e -> {
+                        passwordField.setText(passwordField.getText() + btnNewButton.getText());
+                    }
+            );
         }
-        JButton btnNewButton = new JButton("New button");
+
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(e -> {
+                    passwordField.setText("");
+                }
+        );
+        panel_2.add(clearButton);
+
+        JButton send = new JButton("=> Send");
         GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
         gbc_btnNewButton.anchor = GridBagConstraints.SOUTHEAST;
         gbc_btnNewButton.gridx = 0;
         gbc_btnNewButton.gridy = 0;
-        panel_2.add(btnNewButton, gbc_btnNewButton);
+        panel_2.add(send, gbc_btnNewButton);
 
-        btnNewButton.addActionListener(e -> {
-            System.out.println("coucou");
-//            url = "/login";
-//            requestData = new LinkedMultiValueMap<>();
-//            requestData.add("login", loginField.getText());
-//            requestData.add("password", passwordField.getText());
-//            requestData.add("graine", graine);
-//
-//            String sel = http.post(url, requestData);
-//            System.out.println("sel = " + sel);
+        send.addActionListener(e -> {
+            url = "/password";
+            String v1 = tools.md5(passwordField.getText() + sel);
+            String v2 = tools.md5(v1 + graine);
 
+            requestData = new LinkedMultiValueMap<>();
+            requestData.add("login", login);
+            requestData.add("password", v2);
+            requestData.add("graine", graine);
+
+            String response = http.post(url, requestData);
+            System.out.println("response = " + response);
         });
+    }
+
+    // Implementing Fisher–Yates shuffle
+    static void shuffleArray(int[] ar) {
+        // If running on Java 6 or older, use `new Random()` on RHS here
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i > 0; i--) {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
     }
 }

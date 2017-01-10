@@ -5,12 +5,9 @@ import com.iris.service.Tools;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.awt.EventQueue;
+import java.awt.*;
 
 import javax.swing.*;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -22,16 +19,15 @@ public class ClientWindow {
     private static HttpRequestBuilder http;
     private JFrame frame;
     private JTextField loginField;
-    private JTextField passwordField;
 
     String url;
+    String graine;
     MultiValueMap<String, String> requestData;
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
-        Tools tools = new Tools();
         String baseURL = "https://localhost:8088";
 
         try {
@@ -40,14 +36,12 @@ public class ClientWindow {
             e.printStackTrace();
         }
 
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    ClientWindow window = new ClientWindow();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                ClientWindow window = new ClientWindow();
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -58,7 +52,7 @@ public class ClientWindow {
     public ClientWindow() {
         initialize();
         url = "/graine";
-        String graine = http.get(url);
+        graine = http.get(url);
         System.out.println("graine = " + graine);
 
     }
@@ -94,13 +88,6 @@ public class ClientWindow {
         panel_3.add(loginField);
         loginField.setColumns(10);
 
-        JLabel lblPassword = new JLabel("Password");
-        panel_3.add(lblPassword);
-
-        passwordField = new JTextField();
-        panel_3.add(passwordField);
-        passwordField.setColumns(10);
-
         JPanel panel_2 = new JPanel();
         splitPane.setRightComponent(panel_2);
         GridBagLayout gbl_panel_2 = new GridBagLayout();
@@ -110,12 +97,13 @@ public class ClientWindow {
         gbl_panel_2.rowWeights = new double[]{0.0, Double.MIN_VALUE};
         panel_2.setLayout(gbl_panel_2);
 
-        JButton btnNewButton = new JButton("New button");
+        JButton btnNewButton = new JButton("Next");
         GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
         gbc_btnNewButton.anchor = GridBagConstraints.SOUTHEAST;
         gbc_btnNewButton.gridx = 0;
         gbc_btnNewButton.gridy = 0;
         panel_2.add(btnNewButton, gbc_btnNewButton);
+
         btnNewButton.addActionListener(e -> {
             url = "/login";
             requestData = new LinkedMultiValueMap<>();
@@ -123,6 +111,11 @@ public class ClientWindow {
 
             String sel = http.post(url, requestData);
             System.out.println("sel = " + sel);
+
+            PasswordWindow window = new PasswordWindow(loginField.getText(), graine, sel);
+            frame.setVisible(false);
+            window.frame.setVisible(true);
+
         });
     }
 }

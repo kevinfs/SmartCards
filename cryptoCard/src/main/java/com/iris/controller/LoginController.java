@@ -22,12 +22,18 @@ public class LoginController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
-    public String step2(@RequestParam(value = "login") String login,
+    public String step2(@RequestParam(value = "login") String login) {
+
+        User user = userRepository.findByLogin(login);
+        return user != null ? user.getSel() : String.valueOf(tools.alea(1000));
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/password")
+    public String step3(@RequestParam(value = "login") String login,
                         @RequestParam(value = "password") String password,
                         @RequestParam(value = "graine") String graine) {
 
         User user = userRepository.findByLogin(login);
-
         if (user == null) {
             return "KO";
         }
