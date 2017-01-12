@@ -104,7 +104,6 @@ public class PasswordWindow {
         panel_2.setLayout(gbl_panel_2);
 
 
-
         JLabel status = new JLabel();
         panel_1.add(status);
 
@@ -147,12 +146,12 @@ public class PasswordWindow {
 
             String response = http.post(url, requestData);
             status.setText(response);
-            if(response.equals("OK")){
-            	status.setForeground(Color.GREEN);
-            }else{
-            	status.setForeground(Color.RED);
+            if (response.equals("OK")) {
+                status.setForeground(Color.GREEN);
+            } else {
+                status.setForeground(Color.RED);
             }
-            
+
             System.out.println("response = " + response);
         });
     }
