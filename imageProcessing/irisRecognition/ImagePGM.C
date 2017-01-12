@@ -117,7 +117,7 @@ ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
             	tmp = 255; // On detecte les contours en attribuant une couleur blanche
 
             	gDirection[i][j] = atan2((double)gradiantY,(double)gradiantX)*180/M_PI; //conversion radian to degree
-             printf ("The arc tangent for (x=%f, y=%f) is %f degrees\n", (double)gradiantX, (double)gradiantY, gDirection[i][j]);
+             // printf ("The arc tangent for (x=%f, y=%f) is %f degrees\n", (double)gradiantX, (double)gradiantY, gDirection[i][j]);
             } else {
             	tmp = 0; // si pas de contour on met la couleur à noir
             	gDirection[i][j] = 600.0;

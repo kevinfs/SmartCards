@@ -77,22 +77,22 @@ std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img){
 
 				// printf("r %f beta %f \n", rbeta.r, rbeta.beta );
 				theta = gDirection[i][j] - 90.0;
-				printf("theta first picture value : %f \n",theta);
+				// printf("theta first picture value : %f \n",theta);
 				itup = rTable.lower_bound(theta)->first;   // itup is the "pas" directly above theta
 				itlow = itup - 180/pas;  // itlow is the "pas" directly below theta
-			    printf("itlow :%d itup : %d",itlow,itup);
+			    // printf("itlow :%d itup : %d",itlow,itup);
 			    // std::cout << itlow->first  << " lower " << itlow->first -gDirection[i][j]  << std::endl;
 			    // std::cout << itup->first   << " upper " << itup->first -gDirection[i][j]  << std::endl;
 			    // std::cout << itup->first   << " test " << (itup->first -gDirection[i][j])  -  (itlow->first -gDirection[i][j]) << std::endl;
 			    diffrence = itlow - theta ;
-			    printf(" la difference est :%f",diffrence);
+			    // printf(" la difference est :%f",diffrence);
 			    if ( abs(diffrence) < 2.5)
 			    {
 			    	pos = rTable.find(itlow);
 			    }else{
 			    	pos = rTable.find(itup);
 			    }
-			     std::cout << " pos first " << pos->first << std::endl;
+			     // std::cout << " pos first " << pos->first << std::endl;
 
 				if (pos == rTable.end()) {
 				    //handle the error
@@ -112,7 +112,7 @@ std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img){
     while(it != rTable.end())
     {
         value = it->second;
-		std::cout << "theta " << it->first  << " value " << value.size() << std::endl;
+		// std::cout << "theta " << it->first  << " value " << value.size() << std::endl;
         it++;
 
         // printf("size %lu\n", value.size());
@@ -132,7 +132,6 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 	int maxi=0, maxj=0;
 	double theta = 0.0;
 	ImagePGM accumulation;
-	int maxI = 0,maxJ = 0;
 
 
   	// std::map<int, std::vector<RBeta> >::iterator itlow,itup;
@@ -142,19 +141,40 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
   	std::map<int, std::vector<RBeta> >::iterator pos;
 
 	int xc=0, yc=0;
+	int xCscaled = 0, yCscaled = 0 ;
+	int rotateMax = 1;
+	int rotateMin = 0;
+	int scaleMax = 2;
+	int scaleMin = 1;
+	int centerScale =0 ;
+	int centerRotation = 0 ;
+	int xA = 0;
+	int yA = 0;
 
+	int maxI = 0;
+	int maxJ = 0 ;
   	std::vector<RBeta>  value;
 
 	width =img->get_width();
 	height = img->get_height();
 	accumulation = *img;
 	// std::cout << " width " << width << " height " << height << std::endl;
-	int H[width][height];
+	int H[width][height][rotateMax][scaleMax];
+	
 	for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
 		{
-			H[i][j]=0;
+			for (int x = rotateMin; x < rotateMax; x++)
+			{
+				for (int y = scaleMin; y < scaleMax; y++)
+				{
+										// printf("i %d j %d x : rotate %d y : scale %d \n", i , j, x, y );
+					H[i][j][x][y]=0;
+
+				}/* code */
+			}
+			
 			// accumulation.modifyImg(i, j,0);
 
 		}
@@ -165,7 +185,7 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 	for (int i=0; i < width; i++)
 		gDirection[i] = new double[height];
 
-	*img = img->sobel(140, gDirection);
+		*img = img->sobel(120, gDirection);
 
 
 	for (int i = 0; i < width; i++)
@@ -176,7 +196,6 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 			if (gDirection[i][j]!=600.0 )
 			{
 				theta = gDirection[i][j] - 90.0; // theta is the direction of the tangent
-				printf(" second picture theta values are :%f \n",theta);
 				itup = rTable.lower_bound(theta)->first;   // itup is the "pas" directly above theta
 				itlow = itup - 180/pas;  // itlow is the "pas" directly below theta
 				
@@ -204,15 +223,26 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
    			 			// std::cout << i <<" " << value.at(i).r <<" " << value.at(i).beta << std::endl;
    			 			r = value.at(k).r;
    			 			beta = value.at(k).beta;
-   			 			xc = i + r * cos(beta);
-   			 			yc = j + r * sin(beta);
-   			 			if (xc < width && yc < height && xc >0 && yc >0)
-   			 			{
-   			 				H[xc][yc]++;
 
-						// std::cout << " i " << i <<" j " << j <<" xc " << xc <<" yc " << yc << std::endl;
-   			 			// std::cout << " H[xc][yc] " << H[xc][yc] << std::endl; 
-   			 			}
+   			//  			xA = r * cos(beta);
+						// yA = r * sin(beta);
+			
+			   			for (int s = rotateMin; s < rotateMax; s++)
+						{
+							for (int t = scaleMin; t < scaleMax; t++)
+							{
+								// xc = i - (xA * cos(s) - yA * sin(s))*t ;
+								// yc = i - (xA * sin(s) - yA * cos(s))*t ;
+
+								xc = i + r * t * cos(beta + s);
+			 					yc = j + r * t * sin(beta + s);
+			 					if (xc < width && yc < height && xc > 0 && yc >0)
+		   			 			{
+		   			 				H[xc][yc][s][t]++;
+		   			 			}
+							}/* code */
+						}			
+   			 			
 				    }
 				}
 			}
@@ -222,37 +252,54 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 	{
 		for (int m = 0; m < height; m++)
 		{
-			if (H[l][m]> max)
+			for (int p = rotateMin; p < rotateMax; p++)
 			{
-				max = H[l][m];
-				maxi = l;
-				maxj = m;
+				for (int q = scaleMin; q < scaleMax; q++)
+				{
+					if (H[l][m][p][q]> max)
+					{
+						max = H[l][m][p][q];
+						maxi = l;
+						maxj = m;
+						centerScale = p ;
+						centerRotation = q;
+					}
+
+						    printf("x %d y %d valeur %d \n",l,m , H[l][m][p][q] );
+				}
 			}
+			
 		}
+
 	}
 
 	for (int n = 0; n < width; n++)
 	{
 		for (int o = 0; o < height; o++)
 		{
-			printf("x %d y %d valeur %d \n",n, o, H[n][o] );
-			accumulation.modifyImg(n, o,H[n][o]*255/max);
+			for (int i = rotateMin; i < rotateMin; i++)
+			{
+				for (int j = scaleMin; j < scaleMax; j++)
+				{
+				    // printf("x %d y %d valeur %d \n",n, o, H[n][o][i][j] );
+					accumulation.modifyImg(n, o,H[n][o][i][j]*255/max);	
+					/* code */
+				}
+			}
+			
 		}
 	}
 	accumulation.saveImage("img/accumulation.pgm");// Enregistrement de l'image
 
-	std::cout << " valeur maximale atteinte H[xc][yc] = " << H[maxi][maxj] << " maxi " << maxi << " maxj " << maxj << std::endl; 
-
-	img->modifyImg(maxi, maxj,255);
-	// *xcentre = maxi;
-	// *ycentre = maxj;
-
+	std::cout << " valeur maximale atteinte H[xc][yc] = " << H[maxi][maxj][centerScale][centerRotation] << " maxi " << maxi << " maxj " << maxj << std::endl; 
 	for(int w =0 ; w <30 ; w++){
 		maxI = maxi+w;
 		maxJ = maxj+w;
 		img->modifyImg(maxI, maxJ ,255);
 	}
-
+	
+	*xcentre = maxi;
+	*ycentre = maxj;
 
 }
 
@@ -264,17 +311,22 @@ void generalizedHoughTransform(){
 		std::map<int, std::vector<RBeta> > ellipseRtable, circleRtable;
 		ImagePGM ellipse, ellipse2;     // déclaration de l'image
 		ImagePGM circle;
+		ImagePPM img;
 		int xc=0, yc=0;
 
 		// Generate Rtable in order to recognize the ellipse
 		ellipse.loadImage("img/ellipse1.pgm"); // chargement de l'image
-		ellipse2.loadImage("img/visage.pgm"); // chargement de l'image
+		
+		// img.loadImage("img/loginPicture.ppm");
+		// ImagePGM img2 = img.grayscale();
+		// img2.saveImage("loginPictureGray.pgm");
+		ellipse2.loadImage("img/ellipse6.pgm"); // chargement de l'image
 
 		ellipseRtable = generateRtable(&ellipse);
 		accumulationTable(&ellipse2, ellipseRtable, &xc , &yc);
 
-		ellipse2.saveImage("img/samsam110_sobel_center.pgm");// Enregistrement de l'image
+		ellipse2.saveImage("img/sami_sobel_center.pgm");// Enregistrement de l'image
 
-		
 
 }
+	

@@ -4,25 +4,20 @@
 #include <string.h>
 #include <fstream>
 
-#include "generalizedHoughTransform.h"
-
-// tuto suivi pr hought transform generalized : http://fourier.eng.hmc.edu/e161/lectures/hough/node6.html
+#include "ImagePPM.h"
 
 using namespace std;
-// voir std::map pour hashmap et std::vector pr arraylist
-// diviser le main
-int main() {
+
+int main(int argc, char* argv[]) {
+
 	char inputImage[50];  // récupération du nom de l'image saisi par l'utilisateur
     char* image; 
     ofstream myfile;
+    char* histogrameFile;
 
-    // cout << "Color histogram C++ program" <<endl;
+    image = argv[1]; 
 
-    // cout << "Entrer le nom de votre fichier image : ";
-    // cin >> inputImage;
-    inputImage = "img/ellipse1.ppm"
-    image = inputImage ;
-   
+    histogrameFile = strcat(argv[2],".txt");
 	char* charPointer, *extension;
     string name(image);
 
@@ -41,12 +36,12 @@ int main() {
 		ImagePPM img;     // déclaration de l'image
 		ImagePGM img2;
 		img.loadImage(name.c_str()); // chargement de l'image
-		myfile.open ("histo/histoGrammeRGB.txt");
+		myfile.open(histogrameFile);
 		img2 = img.grayscale();
-		generateRtable(&img2);
-
+		img2 = img2.sobel(110);
 		strcat(image, "_sobel.pgm");// Nouveau nom du fichier
         img2.saveImage(image);// Enregistrement de l'image
+
 
 
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
