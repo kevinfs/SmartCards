@@ -37,6 +37,7 @@ public:
 	ImagePGM sobel(int sobelLevel, double ** gDirection);
 
   void modifyImg( int x, int y, int color) ;
+  int getPixel( int x, int y );
 
   /*******************************************************************/
  /************************Histogramme de l'image ********************/

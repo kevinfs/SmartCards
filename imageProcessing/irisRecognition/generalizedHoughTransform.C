@@ -32,13 +32,15 @@ std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img){
 	int xc=0, yc=0;
 	std::map<int, std::vector<RBeta> > rTable;
 	RBeta rbeta;
-  	std::map<int, std::vector<RBeta> >::iterator itlow,itup;
-
+  	// std::map<int, std::vector<RBeta> >::iterator itlow,itup;
+  	int itlow = 0;
+  	int itup = 0;
+  	double diffrence = 0;
   	std::map<int, std::vector<RBeta> >::iterator pos;
   	std::vector<RBeta>  value;
   	double theta=0.0;
 	// initialisation des theta
-	for ( int theta1 =0 ; theta1 <= 180; theta1 += 180/pas)
+	for ( int theta1 = -90 ; theta1 <= 90; theta1 += 180/pas)
 	{
 		rTable.insert(std::make_pair(theta1, value));
 	}
@@ -67,27 +69,30 @@ std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img){
 	{
 		for (int j = 0; j < height; j++)
 		{
-			if (gDirection[i][j]!=0.0)
+			if (gDirection[i][j]!=600.0)
 			{
 				// printf("i = %d, j = %d gDirection %f\n", i,j, gDirection[i][j]);
 				rbeta.r = computeR(xc, yc, i,j);
 				rbeta.beta = computeBeta(xc, yc, i,j)*180/M_PI;
 
 				// printf("r %f beta %f \n", rbeta.r, rbeta.beta );
-				theta = gDirection[i][j] + 90.0;
-				itlow=rTable.lower_bound(theta);  // lower theta to the gradient
-				itup=rTable.upper_bound (theta);   // itup points to e (not d!)
-
+				theta = gDirection[i][j] - 90.0;
+				printf("theta first picture value : %f \n",theta);
+				itup = rTable.lower_bound(theta)->first;   // itup is the "pas" directly above theta
+				itlow = itup - 180/pas;  // itlow is the "pas" directly below theta
+			    printf("itlow :%d itup : %d",itlow,itup);
 			    // std::cout << itlow->first  << " lower " << itlow->first -gDirection[i][j]  << std::endl;
 			    // std::cout << itup->first   << " upper " << itup->first -gDirection[i][j]  << std::endl;
 			    // std::cout << itup->first   << " test " << (itup->first -gDirection[i][j])  -  (itlow->first -gDirection[i][j]) << std::endl;
-			    if ((itlow->first -theta)>=0 && (itlow->first -theta)<2.4)
+			    diffrence = itlow - theta ;
+			    printf(" la difference est :%f",diffrence);
+			    if ( abs(diffrence) < 2.5)
 			    {
-			    	pos = rTable.find(itlow->first);
+			    	pos = rTable.find(itlow);
 			    }else{
-			    	pos = rTable.find(itup->first);
+			    	pos = rTable.find(itup);
 			    }
-			    // std::cout << " pos " << pos->first << std::endl;
+			     std::cout << " pos first " << pos->first << std::endl;
 
 				if (pos == rTable.end()) {
 				    //handle the error
@@ -160,17 +165,17 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 		gDirection[i] = new double[height];
 
 	*img = img->sobel(180, gDirection);
-	img->saveImage("img/elsobel.pgm");// Enregistrement de l'image
 
 
-	for (int i = 0; i <= width-1; i++)
+	for (int i = 0; i < width; i++)
 	{
-		for (int j = 0; j <= height-1; j++)
+		for (int j = 0; j < height; j++)
 		{
 
-			if (gDirection[i][j]!=0.0)
+			if (gDirection[i][j]!=600.0 )
 			{
-				theta = gDirection[i][j]+90.0; // theta is the direction of the tangent
+				theta = gDirection[i][j] - 90.0; // theta is the direction of the tangent
+				printf(" second picture theta values are :%f \n",theta);
 				itup = rTable.lower_bound(theta)->first;   // itup is the "pas" directly above theta
 				itlow = itup - 180/pas;  // itlow is the "pas" directly below theta
 				
@@ -181,7 +186,7 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 			    
 				// We choose between itup and itlow : which one is the closest ?
 				// pos is the position inside the rTable
-			    if (abs(itlow - theta)<2.4)
+			    if (abs(itlow - theta)<2.5)
 			    {
 			    	// we are closer to itlow
 			    	pos = rTable.find(itlow);
@@ -198,12 +203,12 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 					// Fine, we get beta and the radius
 				    value = pos->second;
 				    // printf("size %lu\n", value.size());
-				    for (int i =0; i<value.size(); i++){
+				    for (int k =0; k<value.size(); k++){
    			 			// std::cout << i <<" " << value.at(i).r <<" " << value.at(i).beta << std::endl;
-   			 			r = value.at(i).r;
-   			 			beta = value.at(i).beta;
-   			 			xc= i + r * cos(beta);
-   			 			yc = j +r * sin(beta);
+   			 			r = value.at(k).r;
+   			 			beta = value.at(k).beta;
+   			 			xc = i + r * cos(beta);
+   			 			yc = j + r * sin(beta);
    			 			if (xc < width && yc < height && xc >0 && yc >0)
    			 			{
    			 				H[xc][yc]++;
@@ -216,29 +221,30 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 			}
 		}
 	}
-	for (int i = 0; i < width; i++)
+	for (int l = 0; l < width; l++)
 	{
-		for (int j = 0; j < height; j++)
+		for (int m = 0; m < height; m++)
 		{
-			if (H[i][j]> max)
+			if (H[l][m]> max)
 			{
-				max = H[i][j];
-				maxi = i;
-				maxj = j;
+				max = H[l][m];
+				maxi = l;
+				maxj = m;
 			}
 		}
 	}
 
-	for (int i = 0; i < width; i++)
+	for (int n = 0; n < width; n++)
 	{
-		for (int j = 0; j < height; j++)
+		for (int o = 0; o < height; o++)
 		{
-			accumulation.modifyImg(i, j,H[i][j]*255/max);
+			printf("x %d y %d valeur %d \n",n, o, H[n][o] );
+			accumulation.modifyImg(n, o,H[n][o]*255/max);
 		}
 	}
 	accumulation.saveImage("img/accumulation.pgm");// Enregistrement de l'image
 
-	std::cout << " H[xc][yc] " << H[maxi][maxj] << " maxi " << maxi << " maxj " << maxj << std::endl; 
+	std::cout << " valeur maximale atteinte H[xc][yc] = " << H[maxi][maxj] << " maxi " << maxi << " maxj " << maxj << std::endl; 
 
 	img->modifyImg(maxi, maxj,255);
 	*xcentre = maxi;
@@ -250,6 +256,7 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 void imgReconstruction(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable, int * xcentre, int * ycentre){
 
 }
+
 void generalizedHoughTransform(){
 		std::map<int, std::vector<RBeta> > ellipseRtable, circleRtable;
 		ImagePGM ellipse, ellipse2;     // déclaration de l'image
@@ -258,12 +265,12 @@ void generalizedHoughTransform(){
 
 		// Generate Rtable in order to recognize the ellipse
 		ellipse.loadImage("img/ellipse1.pgm"); // chargement de l'image
-		ellipse2.loadImage("img/ellipse1.pgm"); // chargement de l'image
+		ellipse2.loadImage("img/samsam10.pgm"); // chargement de l'image
 
 		ellipseRtable = generateRtable(&ellipse);
 		accumulationTable(&ellipse2, ellipseRtable, &xc , &yc);
 
-		ellipse2.saveImage("img/ellipse_sobel.pgm");// Enregistrement de l'image
+		ellipse2.saveImage("img/samsam110_sobel_center.pgm");// Enregistrement de l'image
 
 		// Generate Rtable in order to recognize the circle
 
@@ -277,6 +284,17 @@ void generalizedHoughTransform(){
 		// ellipse.loadImage("img/cerise.pgm"); // chargement de l'image
 		// generateRtable(&ellipse);
 		// ellipse.saveImage("img/cerise_sobel.pgm");// Enregistrement de l'image
+
+
+
+		// Generate Rtable in order to recognize the ellipse
+		// ellipse.loadImage("img/ellipse1.pgm"); // chargement de l'image
+		// ellipse2.loadImage("img/samsam10.pgm"); // chargement de l'image
+
+		// ellipseRtable = generateRtable(&ellipse);
+		// accumulationTable(&ellipse2, ellipseRtable, &xc , &yc);
+
+		// ellipse2.saveImage("img/samsam10_sobel.pgm");// Enregistrement de l'image
 
 }
 	

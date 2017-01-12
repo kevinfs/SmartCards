@@ -61,6 +61,11 @@ void ImagePGM::modifyImg( int x, int y, int color) {
     _array[findPixel(x, y )] = color;//this line print  in the picture
 
 }
+int ImagePGM::getPixel( int x, int y) {
+  
+    return _array[findPixel(x, y )]; //this line print  in the picture
+
+}
 
 ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
     
@@ -70,7 +75,7 @@ ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
     /**********************************************************************/
 	int gradiantX = 0, gradiantY = 0;
 	int g;
-    
+    double test = 0;
     /**************************************************************************/
    /********************* initiation de la matrice de sobel  *****************/
   /**************************************************************************/
@@ -111,12 +116,11 @@ ImagePGM ImagePGM::sobel(int sobelLevel, double ** gDirection) {
             if (g > sobelLevel) {// CONTOURS
             	tmp = 255; // On detecte les contours en attribuant une couleur blanche
 
-            	gDirection[i][j] = atan((double)gradiantY/(double)gradiantX)*180/M_PI; //conversion radian to degree
-            // printf("%d\n", *gDirection );
-
+            	gDirection[i][j] = atan2((double)gradiantY,(double)gradiantX)*180/M_PI; //conversion radian to degree
+             printf ("The arc tangent for (x=%f, y=%f) is %f degrees\n", (double)gradiantX, (double)gradiantY, gDirection[i][j]);
             } else {
             	tmp = 0; // si pas de contour on met la couleur à noir
-            	gDirection[i][j] = 0.0;
+            	gDirection[i][j] = 600.0;
 
             }
            
