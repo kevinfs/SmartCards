@@ -119,12 +119,33 @@ public class CardCommandHelper {
 
 	}
 
-	public boolean updateUserArea2(String data) {
+	public int updateUserArea1(byte[] bytes) {
+
+		if (cardCommand.update(0x10, bytes.length, bytes))
+			return bytes.length;
+		else
+			return 0;
+
+	}
+
+	public int updateUserArea2(String data) {
 
 		// Convert data to bytes
 		byte[] bytes = CardUtils.encodeTextForCard(data);
 
-		return cardCommand.update(0x28, bytes.length, bytes);
+		if (cardCommand.update(0x28, bytes.length, bytes))
+			return bytes.length;
+		else
+			return 0;
+
+	}
+
+	public int updateUserArea2(byte[] bytes) {
+
+		if (cardCommand.update(0x28, bytes.length, bytes))
+			return bytes.length;
+		else
+			return 0;
 
 	}
 
