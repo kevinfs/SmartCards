@@ -1,5 +1,6 @@
 package com.client.gui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,6 +15,7 @@ import javax.swing.JTextField;
 
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import com.client.controller.HttpRequestBuilder;
 
@@ -110,6 +112,7 @@ public class ClientWindow {
 		btnNewButton.addActionListener(e -> {
 			if (loginField.getText().isEmpty()) {
 				lblLogin.setText("Login incorrect !");
+				lblLogin.setForeground(Color.RED);
 			} else {
 				url = "/login";
 				requestData = new LinkedMultiValueMap<>();
