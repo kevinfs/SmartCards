@@ -1,9 +1,17 @@
 package com.iris.service;
 
-import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class Tools {
@@ -75,7 +83,7 @@ public class Tools {
 
 	}
 
-	public boolean verifECDSA(byte[] baText, PublicKey pk, byte[] baSignature) throws GeneralSecurityException {
+	public static boolean verifECDSA(byte[] baText, PublicKey pk, byte[] baSignature) throws GeneralSecurityException {
 		Signature signature;
 		signature = Signature.getInstance("SHA1withECDSA", "SunEC");
 		signature.initVerify(pk);
