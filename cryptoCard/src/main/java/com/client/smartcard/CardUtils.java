@@ -136,5 +136,34 @@ public class CardUtils {
 
 		return finalString.toString();
 	}
+	
+	public static byte[] addPadding(byte[] bytes) {
+		
+		int length = bytes.length;
+		int finalLength = length;
+		while (finalLength % 4 != 0) {
+			finalLength++;
+		}
+
+		// Now we know adequate length for transmission,
+		// we can create the array of bytes
+		byte[] output = new byte[finalLength];
+		// and fill it with the string
+		for (int i = 0; i < bytes.length; i++) {
+			System.arraycopy(bytes, i, output, finalLength - 1 - i, 1);
+		}
+
+		// Add some padding at the beginning
+		if (finalLength > length) {
+			byte[] padding = new byte[finalLength - length];
+
+			for (int i = 0; i < finalLength - length; i++)
+				padding[i] = (byte) 0x00;
+
+			System.arraycopy(padding, 0, output, 0, finalLength - length);
+		}
+		
+		return output;
+	}
 
 }
