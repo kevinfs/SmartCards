@@ -147,6 +147,12 @@ public class PasswordWindow {
 
             String response = http.post(url, requestData);
             status.setText(response);
+            if(response.equals("OK")){
+            	status.setForeground(Color.GREEN);
+            }else{
+            	status.setForeground(Color.RED);
+            }
+            
             System.out.println("response = " + response);
         });
     }
