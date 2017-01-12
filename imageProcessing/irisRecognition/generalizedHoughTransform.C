@@ -179,11 +179,7 @@ void accumulationTable(ImagePGM * img, std::map<int, std::vector<RBeta> > rTable
 				itup = rTable.lower_bound(theta)->first;   // itup is the "pas" directly above theta
 				itlow = itup - 180/pas;  // itlow is the "pas" directly below theta
 				
-				// std::cout << theta << endl;
-			    // std::cout << itlow  << " lower " << itlow - gDirection[i][j]  << std::endl;
-			    // std::cout << itup   << " upper " << itup - gDirection[i][j]  << std::endl;
-			    // std::cout << itup   << " test " << (itup - gDirection[i][j])  -  (itlow - gDirection[i][j]) << std::endl;
-			    
+		
 				// We choose between itup and itlow : which one is the closest ?
 				// pos is the position inside the rTable
 			    if (abs(itlow - theta)<2.5)
@@ -265,7 +261,7 @@ void generalizedHoughTransform(){
 
 		// Generate Rtable in order to recognize the ellipse
 		ellipse.loadImage("img/ellipse1.pgm"); // chargement de l'image
-		ellipse2.loadImage("img/samsam10.pgm"); // chargement de l'image
+		ellipse2.loadImage("img/ellipse6.pgm"); // chargement de l'image
 
 		ellipseRtable = generateRtable(&ellipse);
 		accumulationTable(&ellipse2, ellipseRtable, &xc , &yc);
