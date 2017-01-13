@@ -212,6 +212,30 @@ public class CardCommandHelper {
 
 	}
 
+	public String retrieveSecretKeyString() {
+
+		verifyCSC0();
+		String part1 = "";
+		String part2 = "";
+
+		try {
+
+			part1 = readUserArea1(64);
+			part2 = readUserArea2(64);
+
+			System.out.println("reconstructed :" + part1 + part2);
+			System.out.println(part1);
+			System.out.println(part2);
+
+		} catch (SecurityNotSatisfiedCardCommandException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return part1 + part2;
+
+	}
+
 	public Key retrieveSecretKey() {
 
 		verifyCSC0();
@@ -239,12 +263,12 @@ public class CardCommandHelper {
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
 		KeyFactory kf;
 		try {
-			
+
 			kf = KeyFactory.getInstance("EC", "SunEC");
 			PrivateKey privKey = kf.generatePrivate(keySpec);
 
 			return privKey;
-			
+
 		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
