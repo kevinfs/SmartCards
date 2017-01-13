@@ -24,7 +24,9 @@ CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `login` varchar(30) NOT NULL,
   `password` varchar(32) NOT NULL,
-  `sel` int(11) NOT NULL
+  `sel` int(11) NOT NULL,
+  `public_key` text,
+  `number_to_sign` int(11) DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

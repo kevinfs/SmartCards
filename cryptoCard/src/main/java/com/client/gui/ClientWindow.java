@@ -107,10 +107,13 @@ public class ClientWindow {
                 requestData = new LinkedMultiValueMap<>();
                 requestData.add("login", loginField.getText());
 
-                String sel = http.post(url, requestData);
+                String response = http.post(url, requestData);
+                String sel = response.split(";")[0];
+                String numberToSign = response.split(";")[1];
                 System.out.println("sel = " + sel);
+                System.out.println("numberToSign = " + numberToSign);
 
-                PasswordWindow window = new PasswordWindow(loginField.getText(), graine, sel);
+                PasswordWindow window = new PasswordWindow(loginField.getText(), graine, sel, numberToSign);
                 frame.setVisible(false);
                 window.frame.setVisible(true);
             }
