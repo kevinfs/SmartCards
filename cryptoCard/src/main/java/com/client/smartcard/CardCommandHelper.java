@@ -1,10 +1,14 @@
 package com.client.smartcard;
 
 import java.security.Key;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CardChannel;
 
 public class CardCommandHelper {
@@ -231,15 +235,25 @@ public class CardCommandHelper {
 		// decode the base64 encoded string
 
 		byte[] decodedKey = Base64.getMimeDecoder().decode(part1 + part2);
-		// rebuild key using SecretKeySpec
-		SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "EC");
 
-		// KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
-		// KeySpec ks = new PKCS8EncodedKeySpec((keyPart1Read +
-		// keyPart2Read).getBytes());
-		// PublicKey privKey = (PublicKey) keyFactory.generatePrivate(ks);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
+		KeyFactory kf;
+		try {
+			
+			kf = KeyFactory.getInstance("EC", "SunEC");
+			PrivateKey privKey = kf.generatePrivate(keySpec);
 
-		return secretKey;
+			return privKey;
+			
+		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 
 	}
 

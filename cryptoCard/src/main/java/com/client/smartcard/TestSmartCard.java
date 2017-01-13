@@ -2,6 +2,12 @@ package com.client.smartcard;
 
 import java.security.GeneralSecurityException;
 import java.security.Key;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 
 import javax.smartcardio.Card;
@@ -11,6 +17,7 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
 import com.iris.service.ECDSA;
+import com.iris.service.Tools;
 
 public class TestSmartCard {
 	private static CardTerminal cardTerminal;
@@ -115,12 +122,12 @@ public class TestSmartCard {
 				// cardCommandHelper.verifyCSC2();
 				// cardCommandHelper.readCSC2();
 				//
-				if (cardCommandHelper.resetUserArea1()) {
-					System.out.println("User Area 1 successfully reset");
-				}
-				if (cardCommandHelper.resetUserArea2()) {
-					System.out.println("User Area 2 successfully reset");
-				}
+				// if (cardCommandHelper.resetUserArea1()) {
+				// System.out.println("User Area 1 successfully reset");
+				// }
+				// if (cardCommandHelper.resetUserArea2()) {
+				// System.out.println("User Area 2 successfully reset");
+				// }
 				//
 				// String testWord1 = "AABBCCDDEEFF001122334455";
 				// String testWord2 = "tototata";
@@ -135,24 +142,26 @@ public class TestSmartCard {
 				}
 
 				// Update User Data 1
-				String testWord3 = "bonjour";
-				int numberOfBytesWritten = cardCommandHelper.updateUserArea1(testWord3);
+				// String testWord3 = "bonjour";
+				// int numberOfBytesWritten =
+				// cardCommandHelper.updateUserArea1(testWord3);
 
 				// Read User Data 1 to confirm update
 
-				try {
-					System.out.println("User Area 1 : " + cardCommandHelper.readUserArea1(numberOfBytesWritten));
-				} catch (SecurityNotSatisfiedCardCommandException e) {
-					System.err.println(e.getMessage());
-				}
+				// try {
+				// System.out.println("User Area 1 : " +
+				// cardCommandHelper.readUserArea1(numberOfBytesWritten));
+				// } catch (SecurityNotSatisfiedCardCommandException e) {
+				// System.err.println(e.getMessage());
+				// }
 
 				// ECDSA Test
-				cardCommandHelper.resetUserArea1();
+				// cardCommandHelper.resetUserArea1();
 				try {
+					String login = "kevinfs2";
+					ECDSA ecdsa = new ECDSA("kevinfs2");
 
-					ECDSA ecdsa = new ECDSA("login");
-
-					cardCommandHelper.storeSecretKey(ecdsa.getPrivKey());
+					// cardCommandHelper.storeSecretKey(ecdsa.getPrivKey());
 
 					// Access
 					// String keyPart1Read =
@@ -164,17 +173,32 @@ public class TestSmartCard {
 
 					Key privateKey = cardCommandHelper.retrieveSecretKey();
 
-					// KeyFactory keyFactory = KeyFactory.getInstance("EC",
-					// "SunEC");
+					// Sign
+					Signature ecdsaSign = Signature.getInstance("SHA1withECDSA", "SunEC");
+					ecdsaSign.initSign((PrivateKey) privateKey);
+					ecdsaSign.update(login.getBytes());
+					byte[] signature = ecdsaSign.sign();
+
 					// KeySpec ks = new PKCS8EncodedKeySpec((keyPart1Read +
 					// keyPart2Read).getBytes());
 					// PublicKey privKey = (PublicKey)
 					// keyFactory.generatePrivate(ks);
 
-					// Decrypt
-					// boolean b = Tools.verifECDSA("login".getBytes(),
-					// privateKey, ecdsa.getBaSignature());
-					// System.out.println("Valid : " + b + "\n");
+					// Verify
+					// Sami
+					String key = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjOp8Zfh2e2SB+GvFNn6tk5LahS8FGIGDvjNySOL9u/+wqoXX1Q4f5mYPSc2ByfTi6WMTRgwU+/J9r7VXvTs+nw==";
+					// Kevin
+//					String key = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETdK8yRG3RlJl4DWMlMr54I7eWKqD/ushvbevyulVq96YDNas/7L6galhe1t9590JHyHsQeXt7nbTRmO1vEbD7w==";
+					
+					byte[] decodedKey = Base64.getMimeDecoder().decode(key);
+					KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
+					X509EncodedKeySpec ecpks = new X509EncodedKeySpec(decodedKey);
+					PublicKey publicKey = keyFactory.generatePublic(ecpks);
+
+					// PublicKey secretKey = new SecretKeySpec(decodedKey, 0,
+					// decodedKey.length, "EC");
+					boolean b = Tools.verifECDSA(login.getBytes(), publicKey, signature);
+					System.out.println("Valid : " + b + "\n");
 
 				} catch (GeneralSecurityException e) {
 					e.printStackTrace();
