@@ -1,10 +1,5 @@
 package com.client.smartcard;
 
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.List;
 
 import javax.smartcardio.Card;
@@ -14,7 +9,6 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
 import com.iris.service.ECDSA;
-import com.iris.service.Tools;
 
 public class TestCardKeyGeneration {
 	private static CardTerminal cardTerminal;
@@ -80,121 +74,38 @@ public class TestCardKeyGeneration {
 
 		connectToTerminal();
 
-		while (true) {
+		cardTerminal.waitForCardPresent(4000);
+		if (cardTerminal.isCardPresent()) {
 
-			cardTerminal.waitForCardPresent(4000);
-			if (cardTerminal.isCardPresent()) {
+			connectToCard();
 
-				connectToCard();
+			System.out.println("Number of PIN attempts on CSC0 : " + cardCommandHelper.readCSC0Counter());
+			System.out.println("Number of PIN attempts on CSC1 : " + cardCommandHelper.readCSC1Counter());
+			System.out.println("Number of PIN attempts on CSC2 : " + cardCommandHelper.readCSC2Counter());
 
-				System.out.println("Number of PIN attempts on CSC0 : " + cardCommandHelper.readCSC0Counter());
-				System.out.println("Number of PIN attempts on CSC1 : " + cardCommandHelper.readCSC1Counter());
-				System.out.println("Number of PIN attempts on CSC2 : " + cardCommandHelper.readCSC2Counter());
+			cardCommandHelper.verifyCSC0();
 
-				try {
-					cardCommandHelper.readCSC0();
-				} catch (SecurityNotSatisfiedCardCommandException e) {
-					System.out.println("Access denied. You must fill in your PIN first.");
-				}
+			String login = "kevinfs2";
 
-				if (!cardCommandHelper.verifyCSC0()) {
-					System.out.println("Wrong PIN, " + cardCommandHelper.readCSC0Counter() + " attemps remaining !");
-				}
-
-				try {
-					System.out.println(cardCommandHelper.readCSC0());
-				} catch (SecurityNotSatisfiedCardCommandException e) {
-					System.out.println("You must fill in your PIN first. " + cardCommandHelper.readCSC0Counter()
-							+ " attemps remaining !");
-				}
-
-				// updateCSC1();
-				// updateCSC2();
-
-				// cardCommandHelper.readCSC1Counter();
-				// cardCommandHelper.verifyCSC1();
-				// cardCommandHelper.readCSC1();
-				//
-				// cardCommandHelper.readCSC2Counter();
-				// cardCommandHelper.verifyCSC2();
-				// cardCommandHelper.readCSC2();
-				//
-				if (cardCommandHelper.resetUserArea1()) {
-					System.out.println("User Area 1 successfully reset");
-				}
-				if (cardCommandHelper.resetUserArea2()) {
-					System.out.println("User Area 2 successfully reset");
-				}
-				//
-				// String testWord1 = "AABBCCDDEEFF001122334455";
-				// String testWord2 = "tototata";
-				// System.out.println("toto ? " + testWord2.getBytes());
-
-				// Read User Data 1
-
-				try {
-					System.out.println("User Area 1 : " + cardCommandHelper.readUserArea1(8));
-				} catch (SecurityNotSatisfiedCardCommandException e) {
-					System.err.println(e.getMessage());
-				}
-
-				// Update User Data 1
-				String testWord3 = "bonjour";
-				int numberOfBytesWritten = cardCommandHelper.updateUserArea1(testWord3);
-
-				// Read User Data 1 to confirm update
-
-				try {
-					System.out.println("User Area 1 : " + cardCommandHelper.readUserArea1(numberOfBytesWritten));
-				} catch (SecurityNotSatisfiedCardCommandException e) {
-					System.err.println(e.getMessage());
-				}
-
-				// ECDSA Test
+			ECDSA ecdsa;
+			try {
+				ecdsa = new ECDSA(login);
+				cardCommandHelper.storeSecretKey(ecdsa.getPubKey());
 				cardCommandHelper.resetUserArea1();
-				try {
-
-					ECDSA ecdsa = new ECDSA("login");
-					Integer keyLength = ecdsa.getPrivKey().getEncoded().length;
-
-					// Write key length
-					int numberOfKeySizeBytesWritten = cardCommandHelper.updateUserArea1(keyLength.toString());
-
-					// Write key
-					int numberOfKeyBytesWritten = cardCommandHelper.updateUserArea2(ecdsa.getPrivKey().getEncoded());
-
-					// Debug
-					System.out.println("keyLength " + keyLength);
-					System.out.println("numberOfKeySizeBytesWritten " + numberOfKeySizeBytesWritten);
-					System.out.println("numberOfKeyBytesWritten " + numberOfKeyBytesWritten);
-
-					// Access
-					String keySizeReadS = cardCommandHelper.readUserArea1(numberOfKeySizeBytesWritten);
-					System.out.println(keySizeReadS);
-					String keyReadS = cardCommandHelper.readUserArea2(numberOfKeyBytesWritten);
-					System.out.println(keyReadS);
-
-					KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
-					KeySpec ks = new PKCS8EncodedKeySpec(keyReadS.getBytes());
-					PublicKey privKey = (PublicKey) keyFactory.generatePrivate(ks);
-
-					// Decrypt
-					boolean b = Tools.verifECDSA("login".getBytes(), privKey, ecdsa.getBaSignature());
-					System.out.println("Valid : " + b + "\n");
-
-				} catch (GeneralSecurityException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				// cardCommandHelper.readUserArea2(testWord1.length() / 2);
-
-				card.disconnect(true);
-
+				cardCommandHelper.resetUserArea2();
+				
+				cardCommandHelper.storeSecretKey(ecdsa.getPrivKey());
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			cardTerminal.waitForCardAbsent(60000);
+
+
+			card.disconnect(true);
+
 		}
+		cardTerminal.waitForCardAbsent(60000);
 
 	}
 
