@@ -1,5 +1,10 @@
 package com.client.smartcard;
 
+import java.security.Key;
+import java.util.Base64;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CardChannel;
 
 public class CardCommandHelper {
@@ -120,7 +125,7 @@ public class CardCommandHelper {
 	}
 
 	public int updateUserArea1(byte[] bytes) {
-		
+
 		byte[] bytesPadded = CardUtils.addPadding(bytes);
 
 		if (cardCommand.update(0x10, bytesPadded.length, bytesPadded))
@@ -143,10 +148,10 @@ public class CardCommandHelper {
 	}
 
 	public int updateUserArea2(byte[] bytes) {
-		
+
 		byte[] bytesPadded = CardUtils.addPadding(bytes);
-		
-		System.out.println("lalalalalalalla "+bytesPadded.length);
+
+		System.out.println("lalalalalalalla " + bytesPadded.length);
 
 		if (cardCommand.update(0x28, bytesPadded.length, bytesPadded))
 			return bytesPadded.length;
@@ -179,6 +184,67 @@ public class CardCommandHelper {
 
 		return cardCommand.update(0x28, 64, bytes);
 
+	}
+
+	/**
+	 * Store Secret Key
+	 */
+
+	public boolean storeSecretKey(Key secretKey) {
+		String keyEncoded = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+		System.out.println(keyEncoded);
+
+		String part1 = subString(keyEncoded, 0, 63);
+		// System.out.println(part1.length());
+		// System.out.println(part1);
+		String part2 = subString(keyEncoded, 63, 64);
+		// System.out.println(part2.length());
+		// System.out.println(part2);
+
+		if (updateUserArea1(part1) > 0 && updateUserArea2(part2) > 0)
+			return true;
+		else
+			return false;
+
+	}
+
+	public Key retrieveSecretKey() {
+
+		verifyCSC0();
+		String part1 = "";
+		String part2 = "";
+
+		try {
+
+			part1 = readUserArea1(64);
+			part2 = readUserArea2(64);
+
+			System.out.println("reconstructed :" + part1 + part2);
+			System.out.println(part1);
+			System.out.println(part2);
+
+		} catch (SecurityNotSatisfiedCardCommandException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// decode the base64 encoded string
+
+		byte[] decodedKey = Base64.getMimeDecoder().decode(part1 + part2);
+		// rebuild key using SecretKeySpec
+		SecretKey secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "EC");
+
+		// KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
+		// KeySpec ks = new PKCS8EncodedKeySpec((keyPart1Read +
+		// keyPart2Read).getBytes());
+		// PublicKey privKey = (PublicKey) keyFactory.generatePrivate(ks);
+
+		return secretKey;
+
+	}
+
+	private String subString(String myString, int start, int length) {
+		return myString.substring(start, Math.min(start + length, myString.length()));
 	}
 
 }
