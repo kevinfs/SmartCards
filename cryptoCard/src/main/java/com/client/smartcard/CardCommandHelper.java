@@ -121,10 +121,10 @@ public class CardCommandHelper {
 
 	public int updateUserArea1(byte[] bytes) {
 		
-		bytes = CardUtils.addPadding(bytes);
+		byte[] bytesPadded = CardUtils.addPadding(bytes);
 
-		if (cardCommand.update(0x10, bytes.length, bytes))
-			return bytes.length;
+		if (cardCommand.update(0x10, bytesPadded.length, bytesPadded))
+			return bytesPadded.length;
 		else
 			return 0;
 
@@ -144,12 +144,12 @@ public class CardCommandHelper {
 
 	public int updateUserArea2(byte[] bytes) {
 		
-		bytes = CardUtils.addPadding(bytes);
+		byte[] bytesPadded = CardUtils.addPadding(bytes);
 		
-		System.out.println("lalalalalalalla "+bytes.length);
+		System.out.println("lalalalalalalla "+bytesPadded.length);
 
-		if (cardCommand.update(0x28, bytes.length, bytes))
-			return bytes.length;
+		if (cardCommand.update(0x28, bytesPadded.length, bytesPadded))
+			return bytesPadded.length;
 		else
 			return 0;
 
