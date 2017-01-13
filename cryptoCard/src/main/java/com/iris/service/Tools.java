@@ -39,7 +39,7 @@ public class Tools {
 		return hashString.toString();
 	}
 
-	public int alea(int n) {
+	static public int alea(int n) {
 		return (int) (Math.random() * n);
 	}
 

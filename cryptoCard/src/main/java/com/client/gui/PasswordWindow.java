@@ -7,7 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
+import java.security.Key;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -16,9 +16,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,7 +40,6 @@ import org.springframework.util.MultiValueMap;
 import com.client.controller.HttpRequestBuilder;
 import com.client.smartcard.CardCommandHelper;
 import com.client.smartcard.CardUtils;
-import com.client.smartcard.SecurityNotSatisfiedCardCommandException;
 import com.client.smartcard.TestSmartCard;
 import com.iris.service.Tools;
 
@@ -174,18 +171,18 @@ public class PasswordWindow {
 			url = "/password";
 			String v1 = tools.md5(passwordField.getText() + sel);
 			String v2 = tools.md5(v1 + graine);
+			String card = "";
+
+			try {
+				card = getSignatureFromCard();
+			} catch (CardException e2) {
+			}
 
 			requestData = new LinkedMultiValueMap<>();
 			requestData.add("login", login);
 			requestData.add("password", v2);
 			requestData.add("graine", graine);
-			
-			try {
-				System.out.println(getSignatureFromCard());
-			} catch (CardException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			requestData.add("card", card);
 
 			String response = http.post(url, requestData);
 			status.setText(response);
@@ -223,21 +220,17 @@ public class PasswordWindow {
 
 			try {
 
-				Integer keyLength = Integer.parseInt("68");//Integer.parseInt(cardCommandHelper.readUserArea1(4));
-				System.out.println("KeyLength = " + keyLength);
-				String privateKeyString = cardCommandHelper.readUserArea2(keyLength);
+				Key privateKey = cardCommandHelper.retrieveSecretKey();
 
-				KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
-				KeySpec ks = new PKCS8EncodedKeySpec(privateKeyString.getBytes());
-				PrivateKey privateKey = (PrivateKey) keyFactory.generatePrivate(ks);
-
+				// Sign
 				Signature ecdsaSign = Signature.getInstance("SHA1withECDSA", "SunEC");
-
-				ecdsaSign.initSign(privateKey);
+				ecdsaSign.initSign((PrivateKey) privateKey);
 				ecdsaSign.update(numberToSign.getBytes());
 				byte[] signature = ecdsaSign.sign();
 
-				return new String(signature);
+				String signEncoded = Base64.getEncoder().encodeToString(signature);
+
+				return signEncoded;
 
 			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException e) {
 				// TODO Auto-generated catch block
@@ -245,13 +238,7 @@ public class PasswordWindow {
 			} catch (SignatureException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityNotSatisfiedCardCommandException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

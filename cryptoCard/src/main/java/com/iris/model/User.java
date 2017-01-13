@@ -5,6 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.iris.service.Tools;
+
 @Entity
 public class User {
 
@@ -63,6 +65,10 @@ public class User {
 
 	public void setNumberToSign(String numberToSign) {
 		this.numberToSign = numberToSign;
+	}
+
+	public void updateNumberToSign() {
+		numberToSign = String.valueOf(Tools.alea(200));
 	}
 
 }
