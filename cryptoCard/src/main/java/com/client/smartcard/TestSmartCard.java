@@ -1,10 +1,7 @@
 package com.client.smartcard;
 
 import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.Key;
 import java.util.List;
 
 import javax.smartcardio.Card;
@@ -14,17 +11,12 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
 import com.iris.service.ECDSA;
-import com.iris.service.Tools;
 
 public class TestSmartCard {
 	private static CardTerminal cardTerminal;
 	private static Card card;
 	private static CardChannel cardChannel;
 	private static CardCommandHelper cardCommandHelper;
-
-	static public List<CardTerminal> getTerminals() throws CardException {
-		return TerminalFactory.getDefault().terminals().list();
-	}
 
 	static public String toString(byte[] byteTab) {
 		String texte = "";
@@ -39,6 +31,10 @@ public class TestSmartCard {
 			}
 		}
 		return texte;
+	}
+
+	public static List<CardTerminal> getTerminals() throws CardException {
+		return TerminalFactory.getDefault().terminals().list();
 	}
 
 	public static void connectToTerminal() {
@@ -155,32 +151,30 @@ public class TestSmartCard {
 				try {
 
 					ECDSA ecdsa = new ECDSA("login");
-					Integer keyLength = ecdsa.getPrivKey().getEncoded().length;
 
-					// Write key length
-					int numberOfKeySizeBytesWritten = cardCommandHelper.updateUserArea1(keyLength.toString());
-
-					// Write key
-					int numberOfKeyBytesWritten = cardCommandHelper.updateUserArea2(ecdsa.getPrivKey().getEncoded());
-
-					// Debug
-					System.out.println("keyLength " + keyLength);
-					System.out.println("numberOfKeySizeBytesWritten " + numberOfKeySizeBytesWritten);
-					System.out.println("numberOfKeyBytesWritten " + numberOfKeyBytesWritten);
+					cardCommandHelper.storeSecretKey(ecdsa.getPrivKey());
 
 					// Access
-					String keySizeReadS = cardCommandHelper.readUserArea1(numberOfKeySizeBytesWritten);
-					System.out.println(keySizeReadS);
-					String keyReadS = cardCommandHelper.readUserArea2(numberOfKeyBytesWritten);
-					System.out.println(keyReadS);
-					
-					KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
-					KeySpec ks = new PKCS8EncodedKeySpec(keyReadS.getBytes());
-					PublicKey privKey = (PublicKey) keyFactory.generatePrivate(ks);
+					// String keyPart1Read =
+					// cardCommandHelper.readUserArea1(64);
+					// System.out.println(keyPart1Read);
+					// String keyPart2Read =
+					// cardCommandHelper.readUserArea2(28);
+					// System.out.println(keyPart2Read);
+
+					Key privateKey = cardCommandHelper.retrieveSecretKey();
+
+					// KeyFactory keyFactory = KeyFactory.getInstance("EC",
+					// "SunEC");
+					// KeySpec ks = new PKCS8EncodedKeySpec((keyPart1Read +
+					// keyPart2Read).getBytes());
+					// PublicKey privKey = (PublicKey)
+					// keyFactory.generatePrivate(ks);
 
 					// Decrypt
-					boolean b = Tools.verifECDSA("login".getBytes(), privKey, ecdsa.getBaSignature());
-					System.out.println("Valid : " + b + "\n");
+					// boolean b = Tools.verifECDSA("login".getBytes(),
+					// privateKey, ecdsa.getBaSignature());
+					// System.out.println("Valid : " + b + "\n");
 
 				} catch (GeneralSecurityException e) {
 					e.printStackTrace();
