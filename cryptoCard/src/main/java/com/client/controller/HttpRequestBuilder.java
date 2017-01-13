@@ -22,7 +22,7 @@ public class HttpRequestBuilder {
 
     RestTemplate restTemplate;
     HttpHeaders headers;
-    public static final String KEYSTORE_PATH = "cryptoCard/src/main/resources/keystore.jks";
+    public static final String KEYSTORE_PATH = "/Users/glist/codespace/SmartCards/cryptoCard/src/main/resources/keystore.jks";
     String baseURL;
 
     public HttpRequestBuilder(String baseURL) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {

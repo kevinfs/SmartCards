@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "avant execution"
 
-/Users/utilisateur/Desktop/m2/smartCard/histogram loginPicture.ppm histoSH
+/Users/glist/codespace/SmartCards/imageProcessing/irisRecognition/histogram loginPicture.ppm histoSH
 
 echo "apres execution"

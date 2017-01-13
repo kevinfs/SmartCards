@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class CHistogramCalculator {
 
-	private static String histogramCommand = "/Users/utilisateur/Desktop/m2/smartCard/histogramCompute.sh";
+	private static String histogramCommand = "/Users/glist/codespace/SmartCards/imageProcessing/irisRecognition/histogramCompute.sh";
 
 	public static void getHistogramValue() throws IOException {
 

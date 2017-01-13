@@ -13,8 +13,8 @@ public class TestHisto {
 		RGBHistogram rgbHistogram;
 		RGBHistogram rgbTemporaryHistogram;
 
-		HistogramFileReader refrencehistogramFile = new HistogramFileReader("histoGrammeRGB.txt");
-		HistogramFileReader temporaryhistogramFile = new HistogramFileReader("histoGrammeRGB6.txt");
+		HistogramFileReader refrencehistogramFile = new HistogramFileReader("/Users/glist/codespace/SmartCards/imageProcessing/javaIrisProcess/smartCard/src/main/resources/archives/historef.txt");
+		HistogramFileReader temporaryhistogramFile = new HistogramFileReader("/Users/glist/codespace/SmartCards/imageProcessing/javaIrisProcess/smartCard/src/main/resources/archives/histoSH.txt");
 
 		rgbHistogram = refrencehistogramFile.getHistogramme();
 		double sumPixels = rgbHistogram.getHistogramTotalPixels();

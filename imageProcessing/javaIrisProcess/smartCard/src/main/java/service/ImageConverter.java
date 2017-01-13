@@ -19,9 +19,9 @@ public class ImageConverter {
 			String outputPath = getOutputPathFromInputPath(inputFilePath, format);
 			String convertPath = "";
 			if (System.getProperty("os.name").equals("Linux")) {
-				convertPath = "/usr/bin/convert ";
+				convertPath = "/opt/ImageMagick/bin/convert";
 			} else {
-				convertPath = "/usr/local/bin/convert  ";
+				convertPath = "/opt/ImageMagick/bin/convert";
 			}
 
 			if (format.equals("ppm")) {

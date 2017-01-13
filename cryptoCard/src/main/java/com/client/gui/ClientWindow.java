@@ -1,12 +1,19 @@
 package com.client.gui;
 
 import com.client.controller.HttpRequestBuilder;
+import com.github.sarxos.webcam.Webcam;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import service.CHistogramCalculator;
+import service.ImageConverter;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class ClientWindow {
 
@@ -17,6 +24,7 @@ public class ClientWindow {
     String url;
     String graine;
     MultiValueMap<String, String> requestData;
+
 
     /**
      * Launch the application.
