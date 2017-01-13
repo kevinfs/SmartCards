@@ -200,3 +200,11 @@ imageProcessing/javaIrisProcess/smartCard/src/main/resources/Archive/loginPictur
 *.pgm
 
 *.png
+
+imageProcessing/irisRecognition/img/samsam110_sobel_center.pgm
+
+imageProcessing/irisRecognition/img/samsam110_sobel_center.pgm
+
+imageProcessing/irisRecognition/img/accumulation.pgm
+
+imageProcessing/irisRecognition/img/accumulation.pgm
