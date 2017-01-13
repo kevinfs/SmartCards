@@ -6,13 +6,28 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
+import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
+import javax.smartcardio.TerminalFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +40,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.client.controller.HttpRequestBuilder;
+import com.client.smartcard.CardCommandHelper;
+import com.client.smartcard.CardUtils;
+import com.client.smartcard.SecurityNotSatisfiedCardCommandException;
+import com.client.smartcard.TestSmartCard;
 import com.iris.service.Tools;
 
 public class PasswordWindow {
@@ -33,6 +52,11 @@ public class PasswordWindow {
 	public JFrame frame;
 	private JTextField passwordField;
 	Tools tools = new Tools();
+
+	private static CardTerminal cardTerminal;
+	private static Card card;
+	private static CardChannel cardChannel;
+	private static CardCommandHelper cardCommandHelper;
 
 	String url;
 	String login;
@@ -155,6 +179,13 @@ public class PasswordWindow {
 			requestData.add("login", login);
 			requestData.add("password", v2);
 			requestData.add("graine", graine);
+			
+			try {
+				System.out.println(getSignatureFromCard());
+			} catch (CardException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			String response = http.post(url, requestData);
 			status.setText(response);
@@ -178,6 +209,90 @@ public class PasswordWindow {
 			int a = ar[index];
 			ar[index] = ar[i];
 			ar[i] = a;
+		}
+	}
+
+	public String getSignatureFromCard() throws CardException {
+
+		connectToTerminal();
+
+		cardTerminal.waitForCardPresent(4000);
+		if (cardTerminal.isCardPresent()) {
+
+			connectToCard();
+
+			try {
+
+				Integer keyLength = Integer.parseInt("68");//Integer.parseInt(cardCommandHelper.readUserArea1(4));
+				System.out.println("KeyLength = " + keyLength);
+				String privateKeyString = cardCommandHelper.readUserArea2(keyLength);
+
+				KeyFactory keyFactory = KeyFactory.getInstance("EC", "SunEC");
+				KeySpec ks = new PKCS8EncodedKeySpec(privateKeyString.getBytes());
+				PrivateKey privateKey = (PrivateKey) keyFactory.generatePrivate(ks);
+
+				Signature ecdsaSign = Signature.getInstance("SHA1withECDSA", "SunEC");
+
+				ecdsaSign.initSign(privateKey);
+				ecdsaSign.update(numberToSign.getBytes());
+				byte[] signature = ecdsaSign.sign();
+
+				return new String(signature);
+
+			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SignatureException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidKeySpecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityNotSatisfiedCardCommandException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			card.disconnect(true);
+
+		}
+
+		return "";
+	}
+
+	public static List<CardTerminal> getTerminals() throws CardException {
+		return TerminalFactory.getDefault().terminals().list();
+	}
+
+	public static void connectToTerminal() {
+		List<CardTerminal> terminauxDispos;
+		try {
+			terminauxDispos = TestSmartCard.getTerminals();
+			if (terminauxDispos.size() > 0) {
+				cardTerminal = terminauxDispos.get(0);
+				System.out.println("Connected to : " + cardTerminal.toString());
+			}
+		} catch (CardException e) {
+			System.err.println("Unable to find a terminal");
+		}
+	}
+
+	public static void connectToCard() {
+		try {
+			// Card connection
+			card = cardTerminal.connect("T=0");
+
+			// ATR (answer To Reset)
+			System.out.println("Connected to : " + CardUtils.decodeToBytesForUser(card.getATR().getBytes()));
+
+			// Open channel
+			cardChannel = card.getBasicChannel();
+			cardCommandHelper = new CardCommandHelper(cardChannel);
+		} catch (CardException e) {
+			System.err.println("Unable to connect to a card");
 		}
 	}
 }
