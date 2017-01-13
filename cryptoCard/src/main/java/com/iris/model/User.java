@@ -15,7 +15,7 @@ public class User {
 	private String password;
 	private String sel;
 	private String publicKey;
-	private Long numberToSign;
+	private String numberToSign;
 
 	public Long getId() {
 		return id;
@@ -57,11 +57,11 @@ public class User {
 		this.publicKey = publicKey;
 	}
 
-	public Long getNumberToSign() {
+	public String getNumberToSign() {
 		return numberToSign;
 	}
 
-	public void setNumberToSign(Long numberToSign) {
+	public void setNumberToSign(String numberToSign) {
 		this.numberToSign = numberToSign;
 	}
 
