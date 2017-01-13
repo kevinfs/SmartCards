@@ -38,6 +38,8 @@ public:
 
   void modifyImg( int x, int y, int color) ;
   int getPixel( int x, int y );
+  void dilatation(); 
+
 
   /*******************************************************************/
  /************************Histogramme de l'image ********************/

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <fstream>
 
-#include "ImagePPM.h"
+#include "generalizedHoughTransform.h"
 
 using namespace std;
 
@@ -34,15 +34,17 @@ int main(int argc, char* argv[]) {
 	if (strcmp(extension, "ppm") == 0) { // condition sur le type de fichier ppm ou pgm
 		
 		ImagePPM img;     // déclaration de l'image
-		ImagePGM img2;
-		img.loadImage(name.c_str()); // chargement de l'image
+		// ImagePGM img2;
+		// img.loadImage(name.c_str()); // chargement de l'image
 		myfile.open(histogrameFile);
-		img2 = img.grayscale();
-		img2 = img2.sobel(110);
-		strcat(image, "_sobel.pgm");// Nouveau nom du fichier
-        img2.saveImage(image);// Enregistrement de l'image
+		// img2 = img.grayscale();
+		// img2 = img2.sobel(110);
+		// strcat(image, "_sobel.pgm");// Nouveau nom du fichier
+  //       img2.saveImage(image);// Enregistrement de l'image
 
 
+		img = generalizedHoughTransform(name.c_str());
+		img.saveImage("face.ppm");
 
 		ImagePPM::histoPixel *pInt = img.histogrammeRGB();
         

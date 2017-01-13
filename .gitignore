@@ -184,3 +184,7 @@ local.properties
 # Code Recommenders
 .recommenders/
 imageProcessing/irisRecognition/iris
+
+imageProcessing/irisRecognition/img/accumulation.pgm
+
+imageProcessing/irisRecognition/img/samsam110_sobel_center.pgm

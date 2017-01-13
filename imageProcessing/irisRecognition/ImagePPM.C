@@ -60,6 +60,14 @@ int *ImagePPM::histogrammeR() {
 
     return histo;
 }
+void ImagePPM::modifyImg( int x, int y, int r, int g, int b) {
+  
+    _array[findPixel(x, y )] = r;//this line print  in the picture
+    _array[findPixel(x, y )+1] = g;//this line print  in the picture
+    _array[findPixel(x, y )+2] = b;//this line print  in the picture
+
+
+}
 
 ImagePPM::histoPixel *ImagePPM::histogrammeRGB() {
 

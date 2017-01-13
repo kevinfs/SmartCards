@@ -37,6 +37,8 @@ public:
 
 	/**** histogramme Couleur *****/
 	histoPixel *histogrammeRGB();
+	void modifyImg( int x, int y, int r, int g, int b) ;
+
 
 	
 

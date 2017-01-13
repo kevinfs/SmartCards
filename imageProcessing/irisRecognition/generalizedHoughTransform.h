@@ -19,4 +19,4 @@ struct RBeta {
 
 
 std::map<int, std::vector<RBeta> > generateRtable(ImagePGM *img);
-void generalizedHoughTransform();
+ImagePPM generalizedHoughTransform(string pictureName);

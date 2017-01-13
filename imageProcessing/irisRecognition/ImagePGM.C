@@ -149,6 +149,32 @@ int* ImagePGM::histogramme(){
 	return histo ;
 }
 
+void ImagePGM::dilatation() 
+{
+
+	for (int i = 1; i < _width -1; i++) {
+		for (int j = 1; j < _height -1; j++) {
+			 if (_array[findPixel(i,j)]==0)
+			{
+				if ( 		
+							// (_array[findPixel(i+1,j)]==255) 
+						 	(_array[findPixel(i-1,j)]==255)
+						&& 	(_array[findPixel(i,j-1)]==255)
+						// || 	(_array[findPixel(i,j+1)]==255) 
+						// || 	(_array[findPixel(i-1,j-1)]==255) 
+						// || 	(_array[findPixel(i-1,j+1)]==255) 
+						// || 	(_array[findPixel(i+1,j-1)]==255) 
+						// || 	(_array[findPixel(i+1,j+1)]==255)	
+				){
+					_array[findPixel(i,j)] = 255;
+				}
+				else
+					_array[findPixel(i,j)] = 0;
+			}
+			
+		}
+	}
+}
 
 int ImagePGM::countPixels(){
 
